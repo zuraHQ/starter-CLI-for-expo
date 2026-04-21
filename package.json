@@ -1,6 +1,6 @@
 {
   "name": "create-expo-plate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI to scaffold Expo starter projects",
   "type": "module",
   "bin": {
@@ -13,7 +13,13 @@
     "build": "tsup",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["expo", "react-native", "cli", "boilerplate", "starter"],
+  "keywords": [
+    "expo",
+    "react-native",
+    "cli",
+    "boilerplate",
+    "starter"
+  ],
   "author": "zuraHQ",
   "license": "MIT",
   "devDependencies": {

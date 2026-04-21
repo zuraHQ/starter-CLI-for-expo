@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // src/index.ts
-import { intro, select, outro, cancel } from "@clack/prompts";
+import { intro, select, outro, cancel, text, spinner } from "@clack/prompts";
 import degit from "degit";
 import { execa } from "execa";
 
@@ -9,24 +9,35 @@ import { execa } from "execa";
 var templates = [
   {
     id: "expo-base",
-    label: "Expo (base)",
-    repo: "zuraHQ/expo-plate-starter/expo-plate-basic"
+    label: "Expo (base) \u2014 payments, onboarding, Tailwind, HeroUI components",
+    repo: "zuraHQ/Modern-expo-boilerplate/expo-plate-basic"
   },
   {
     id: "expo-convex-clerk",
-    label: "Expo + Convex + Clerk Auth",
-    repo: "zuraHQ/expo-plate-starter/expo-convex-clerk"
+    label: "Expo + Convex + Clerk \u2014 payments, onboarding, Tailwind, HeroUI components, authentication, database",
+    repo: "zuraHQ/Modern-expo-boilerplate/expo-convex-clerk"
   }
 ];
 
 // src/index.ts
 import path from "path";
+intro("Create Expo Plate");
 var appName = process.argv[2];
 if (!appName) {
-  cancel("Missing project name");
-  process.exit(1);
+  const answer = await text({
+    message: "Project name:",
+    placeholder: "my-app",
+    defaultValue: "my-app",
+    validate(value) {
+      if (!value.trim()) return "Project name is required";
+    }
+  });
+  if (typeof answer !== "string") {
+    cancel("Aborted");
+    process.exit(0);
+  }
+  appName = answer;
 }
-intro("Select a starter");
 var templateId = await select({
   message: "Choose a template:",
   options: templates.map((t) => ({
@@ -44,9 +55,14 @@ var emitter = degit(template.repo, {
   cache: false,
   force: true
 });
+var s = spinner();
+s.start(`Cloning template into ./${appName}`);
 await emitter.clone(targetDir);
+s.stop(`Template cloned`);
+s.start("Installing dependencies");
 await execa("npm", ["install"], {
   cwd: targetDir,
   stdio: "inherit"
 });
-outro("Done \u{1F389}");
+s.stop("Dependencies installed");
+outro(`Done! Run: cd ${appName} && npx expo run:ios`);
